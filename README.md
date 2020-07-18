@@ -1,5 +1,4 @@
 # AudioVisualizerWinFramework
-_____
 
 This is a flexible audio visualizer program with customizable colors and easily created visualization modes.
 
