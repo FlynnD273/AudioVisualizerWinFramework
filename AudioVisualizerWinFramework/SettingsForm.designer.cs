@@ -88,7 +88,7 @@
             "Speaker Out",
             "Microphone In",
             "From File"});
-            this.inputModeComboBox.Location = new System.Drawing.Point(182, 14);
+            this.inputModeComboBox.Location = new System.Drawing.Point(182, 10);
             this.inputModeComboBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.inputModeComboBox.Name = "inputModeComboBox";
             this.inputModeComboBox.Size = new System.Drawing.Size(164, 28);
@@ -99,7 +99,7 @@
             // 
             this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.renderModeComboBox.FormattingEnabled = true;
-            this.renderModeComboBox.Location = new System.Drawing.Point(351, 15);
+            this.renderModeComboBox.Location = new System.Drawing.Point(354, 10);
             this.renderModeComboBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.renderModeComboBox.Name = "renderModeComboBox";
             this.renderModeComboBox.Size = new System.Drawing.Size(164, 28);
@@ -189,15 +189,15 @@
             // 
             // colorsListBox
             // 
-            this.colorsListBox.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.colorsListBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.colorsListBox.BackColor = System.Drawing.SystemColors.Menu;
+            this.colorsListBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.colorsListBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.colorsListBox.FormattingEnabled = true;
             this.colorsListBox.ItemHeight = 14;
             this.colorsListBox.Location = new System.Drawing.Point(521, 46);
             this.colorsListBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.colorsListBox.Name = "colorsListBox";
-            this.colorsListBox.Size = new System.Drawing.Size(27, 128);
+            this.colorsListBox.Size = new System.Drawing.Size(27, 154);
             this.colorsListBox.TabIndex = 12;
             this.colorsListBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ColorsListBox_DrawItem);
             this.colorsListBox.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ColorNamesListBox_MouseDoubleClick);
@@ -210,7 +210,7 @@
             this.filePanel.Location = new System.Drawing.Point(11, 146);
             this.filePanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.filePanel.Name = "filePanel";
-            this.filePanel.Size = new System.Drawing.Size(338, 107);
+            this.filePanel.Size = new System.Drawing.Size(338, 157);
             this.filePanel.TabIndex = 13;
             // 
             // audioPlaybackPanel
@@ -218,18 +218,18 @@
             this.audioPlaybackPanel.Controls.Add(this.exportButton);
             this.audioPlaybackPanel.Controls.Add(this.songProgressBar);
             this.audioPlaybackPanel.Controls.Add(this.playButton);
-            this.audioPlaybackPanel.Location = new System.Drawing.Point(1, 32);
+            this.audioPlaybackPanel.Location = new System.Drawing.Point(3, 46);
             this.audioPlaybackPanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.audioPlaybackPanel.Name = "audioPlaybackPanel";
-            this.audioPlaybackPanel.Size = new System.Drawing.Size(337, 75);
+            this.audioPlaybackPanel.Size = new System.Drawing.Size(337, 88);
             this.audioPlaybackPanel.TabIndex = 2;
             // 
             // exportButton
             // 
-            this.exportButton.Location = new System.Drawing.Point(231, 33);
+            this.exportButton.Location = new System.Drawing.Point(231, 46);
             this.exportButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.exportButton.Name = "exportButton";
-            this.exportButton.Size = new System.Drawing.Size(101, 27);
+            this.exportButton.Size = new System.Drawing.Size(101, 40);
             this.exportButton.TabIndex = 5;
             this.exportButton.Text = "Export";
             this.exportButton.UseVisualStyleBackColor = true;
@@ -239,15 +239,15 @@
             // 
             this.songProgressBar.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.songProgressBar.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.songProgressBar.Location = new System.Drawing.Point(37, 1);
+            this.songProgressBar.Location = new System.Drawing.Point(3, 14);
             this.songProgressBar.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.songProgressBar.Name = "songProgressBar";
-            this.songProgressBar.Size = new System.Drawing.Size(295, 27);
+            this.songProgressBar.Size = new System.Drawing.Size(329, 27);
             this.songProgressBar.TabIndex = 4;
             // 
             // playButton
             // 
-            this.playButton.Location = new System.Drawing.Point(0, 0);
+            this.playButton.Location = new System.Drawing.Point(0, 45);
             this.playButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.playButton.Name = "playButton";
             this.playButton.Size = new System.Drawing.Size(40, 40);
@@ -258,9 +258,10 @@
             // fileNameLabel
             // 
             this.fileNameLabel.AutoSize = true;
-            this.fileNameLabel.Location = new System.Drawing.Point(106, 4);
+            this.fileNameLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.fileNameLabel.Location = new System.Drawing.Point(97, 4);
             this.fileNameLabel.Name = "fileNameLabel";
-            this.fileNameLabel.Size = new System.Drawing.Size(80, 20);
+            this.fileNameLabel.Size = new System.Drawing.Size(125, 29);
             this.fileNameLabel.TabIndex = 1;
             this.fileNameLabel.Text = "File Name";
             // 
@@ -269,7 +270,7 @@
             this.loadFileButton.Location = new System.Drawing.Point(0, 0);
             this.loadFileButton.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.loadFileButton.Name = "loadFileButton";
-            this.loadFileButton.Size = new System.Drawing.Size(101, 27);
+            this.loadFileButton.Size = new System.Drawing.Size(101, 42);
             this.loadFileButton.TabIndex = 0;
             this.loadFileButton.Text = "Open File";
             this.loadFileButton.UseVisualStyleBackColor = true;
