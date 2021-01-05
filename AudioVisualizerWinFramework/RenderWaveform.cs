@@ -21,9 +21,9 @@ namespace AudioVisualizerWinFramework
             {
                 float height = Smooth(heights, i, Settings.Smoothing);
 
-                points.Add(new PointF(i / (float)heights.Length * g.VisibleClipBounds.Width * Settings.XScale, (float)( g.VisibleClipBounds.Size.Height / 2 - height * Settings.YScale)));
+                points.Add(new PointF(i / (float)heights.Length * Settings.WindowSize.Width * Settings.XScale, (float)( Settings.WindowSize.Height / 2 - height * Settings.YScale)));
 
-                if (i / (float)heights.Length *  g.VisibleClipBounds.Width * Settings.XScale >  g.VisibleClipBounds.Width)
+                if (i / (float)heights.Length *  Settings.WindowSize.Width * Settings.XScale >  Settings.WindowSize.Width)
                 {
                     break;
                 }

@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
+
+//The settings for the individual visualizers
+//This stores all of the customizable values for a visualizer style
 
 namespace AudioVisualizerWinFramework
 {
@@ -49,6 +49,16 @@ namespace AudioVisualizerWinFramework
 
         public int SampleCount { get; private set; }
 
+        private Size _windowSize;
+        public Size WindowSize
+        {
+            get { return _windowSize; }
+            set { UpdateField(ref _windowSize, value); }
+        }
+
+        public int WindowWidth { get => WindowSize.Width; set => WindowSize = new Size(value, WindowSize.Height); }
+        public int WindowHeight { get => WindowSize.Height; set => WindowSize = new Size(WindowSize.Width, value); }
+
         private BindingList<NamedColor> _colors;
 
         public BindingList<NamedColor> Colors
@@ -57,23 +67,45 @@ namespace AudioVisualizerWinFramework
             set => UpdateField(ref _colors, value);
         }
 
-        public Settings (float x, float y, int samplePow, int smoothing)
+        public Settings(float x, float y, int samplePow, int smoothing, Size windowSize) : this(x, y, samplePow, smoothing, windowSize, new BindingList<NamedColor>()) { }
+
+        public Settings(float x, float y, int samplePow, int smoothing, Size windowSize, BindingList<NamedColor> colors)
         {
             XScale = x;
             YScale = y;
             SamplePow = samplePow;
             Smoothing = smoothing;
-            Colors = new BindingList<NamedColor>();
+            Colors = colors;
+            WindowSize = windowSize;
         }
 
         public NamedColor GetNamedColor(string name)
         {
-            return Colors.First(c => c.Name == name);
+            if (ContainsName(name))
+                return Colors.First(c => c.Name == name);
+            return null;
+        }
+
+        private bool ContainsName(string name)
+        {
+            foreach(NamedColor c in Colors)
+            {
+                if (c.Name == name)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         
         public Color GetColor(string name)
         {
             return GetNamedColor(name).Color;
+        }
+
+        public Settings Copy()
+        {
+            return new Settings(XScale, YScale, SamplePow, Smoothing, WindowSize, Colors);
         }
     }
 }

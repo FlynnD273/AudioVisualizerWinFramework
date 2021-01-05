@@ -8,20 +8,22 @@ using NAudio.Wave;
 using static AudioVisualizerWinFramework.NamedInputState;
 using FFMpegCore;
 using FFMpegCore.Pipes;
-using FFMpegCore.Extend;
-using System.ComponentModel;
-using System.Linq;
-using FFMpegCore.Enums;
 using AudioVisualizerWinFramework.Properties;
 using Accord.Video.FFMPEG;
-//using Accord.Video.VFW;
+using System.Diagnostics;
+using System.Text;
+using System.Text.RegularExpressions;
+
+//The form for editing the visualizer settings
 
 namespace AudioVisualizerWinFramework
 {
     partial class SettingsForm : Form
     {
         public event EventHandler<RenderEventArgs> SettingsChanged;
+        public event EventHandler<WindowSizeChangedEventArgs> WindowChanged;
         public event EventHandler UpdateGraphics;
+        public bool ShouldPaint { get; private set; }
 
         private BufferedWaveProvider waveProvider;
         private ISampleProvider provider;
@@ -31,8 +33,11 @@ namespace AudioVisualizerWinFramework
         private List<RenderBase> renderOptions;
 
         public List<float> Samples { get; private set; }
-        private RenderBase Render;
-        private Settings Settings;
+
+        private RenderBase render;
+        private Settings settings;
+        private Settings videoSettings;
+
         public bool ProgramShuttingDown { get; set; }
 
         private WaveFileReader reader;
@@ -41,14 +46,21 @@ namespace AudioVisualizerWinFramework
         private System.Timers.Timer progressTimer;
 
         private SongInfo songInfo;
-        public SettingsForm()
+
+        public string Folder;
+
+        public SettingsForm(Size size)
         {
+            ShouldPaint = false;
             InitializeComponent();
 
             Samples = new List<float>();
 
-            InitOptions();
-            InitUI();
+            InitOptions(size);
+            InitUI(size);
+            Folder = DateTime.Now.GetHashCode().ToString();
+            Directory.CreateDirectory("Temp");
+            Directory.CreateDirectory(Path.Combine("Temp", Folder));
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -58,16 +70,42 @@ namespace AudioVisualizerWinFramework
                 e.Cancel = true;
                 Visible = false;
             }
+            else
+            {
+                reader?.Dispose();
+                foreach (string f in Directory.GetFiles(Path.Combine("Temp", Folder)))
+                {
+                    try
+                    {
+                        File.Delete(f);
+                    }
+                    catch(IOException err)
+                    {
+
+                    }
+                }
+                try
+                {
+                    Directory.Delete(Path.Combine("Temp", Folder));
+                }
+                catch (IOException err)
+                {
+
+                }
+            }
 
             base.OnFormClosing(e);
         }
 
-        private void InitUI()
+        private void InitUI(Size size)
         {
             xScaleNumberBox.KeyDown += NumericUpDown_KeyDown;
             yScaleNumberBox.KeyDown += NumericUpDown_KeyDown;
             samplePowNumberBox.KeyDown += NumericUpDown_KeyDown;
             smoothingNumberBox.KeyDown += NumericUpDown_KeyDown;
+            windowHeightNumberBox.KeyDown += NumericUpDown_KeyDown;
+            windowWidthNumberBox.KeyDown += NumericUpDown_KeyDown;
+
 
             renderModeComboBox.SelectedIndexChanged += RaiseSettingsChanged;
 
@@ -86,6 +124,8 @@ namespace AudioVisualizerWinFramework
             samplePowNumberBox.Maximum = 16;
             smoothingNumberBox.Minimum = 1;
             smoothingNumberBox.Maximum = 10000;
+            windowWidthNumberBox.Maximum = size.Width;
+            windowHeightNumberBox.Maximum = size.Height;
 
             playButton.Image = Resources.Play;
             audioPlaybackPanel.Enabled = false;
@@ -96,21 +136,21 @@ namespace AudioVisualizerWinFramework
 
         private void RaiseSettingsChanged(object sender, EventArgs e)
         {
-            SettingsChanged?.Invoke(sender, new RenderEventArgs(Render));
+            SettingsChanged?.Invoke(sender, new RenderEventArgs(render));
         }
 
-        private void InitOptions()
+        private void InitOptions(Size s)
         {
             settingsOptions = new List<Settings>
             {
-                new Settings(1.0f, 200f, 13, 1), //Waveform
-                new Settings(5.0f, 300f, 13, 1), //Frequency
-                new Settings(5.0f, 200f, 13, 1), //Reflections
-                new Settings(5.0f, 300f, 13, 20), //Frequency Wave
-                new Settings(8.0f, 200f, 13, 10), //Circle Outline
-                new Settings(8.0f, 200f, 13, 10), //Shadow
-                new Settings(8.0f, 200f, 13, 10), //Color Wheel
-                new Settings(4.0f, 100f, 13, 10) //Mirrored Circle
+                new Settings(1.0f, 200f, 13, 1, s), //Waveform
+                new Settings(5.0f, 300f, 13, 1, s), //Frequency
+                new Settings(5.0f, 200f, 13, 1, s), //Reflections
+                new Settings(5.0f, 300f, 13, 20, s), //Frequency Wave
+                new Settings(8.0f, 200f, 13, 10, s), //Circle Outline
+                new Settings(8.0f, 200f, 13, 10, s), //Shadow
+                new Settings(8.0f, 200f, 13, 10, s), //Color Wheel
+                new Settings(4.0f, 100f, 13, 10, s) //Mirrored Circle
             };
 
             renderOptions = new List<RenderBase>();
@@ -123,24 +163,24 @@ namespace AudioVisualizerWinFramework
             renderOptions.Add(new RenderRainbowCircle(settingsOptions[renderOptions.Count], "Color Wheel"));
             renderOptions.Add(new RenderReflectedCircle(settingsOptions[renderOptions.Count], "Mirrored Circle"));
 
-            Settings = settingsOptions[0];
-            Render = renderOptions[0];
+            settings = settingsOptions[0];
+            render = renderOptions[0];
         }
 
         private void UpdateSettings()
         {
-            Settings = settingsOptions[renderModeComboBox.SelectedIndex];
-            Render = renderOptions[renderModeComboBox.SelectedIndex];
+            settings = settingsOptions[renderModeComboBox.SelectedIndex];
+            render = renderOptions[renderModeComboBox.SelectedIndex];
             xScaleNumberBox.DataBindings.Clear();
-            xScaleNumberBox.DataBindings.Add("Value", Settings, "XScale", false, DataSourceUpdateMode.OnPropertyChanged);
+            xScaleNumberBox.DataBindings.Add("Value", settings, "XScale", false, DataSourceUpdateMode.OnPropertyChanged);
             yScaleNumberBox.DataBindings.Clear();
-            yScaleNumberBox.DataBindings.Add("Value", Settings, "YScale", false, DataSourceUpdateMode.OnPropertyChanged);
+            yScaleNumberBox.DataBindings.Add("Value", settings, "YScale", false, DataSourceUpdateMode.OnPropertyChanged);
             samplePowNumberBox.DataBindings.Clear();
-            samplePowNumberBox.DataBindings.Add("Value", Settings, "SamplePow", false, DataSourceUpdateMode.OnPropertyChanged);
+            samplePowNumberBox.DataBindings.Add("Value", settings, "SamplePow", false, DataSourceUpdateMode.OnPropertyChanged);
             smoothingNumberBox.DataBindings.Clear();
-            smoothingNumberBox.DataBindings.Add("Value", Settings, "Smoothing", false, DataSourceUpdateMode.OnPropertyChanged);
-            colorNamesListBox.DataSource = Settings.Colors;
-            colorsListBox.DataSource = Settings.Colors;
+            smoothingNumberBox.DataBindings.Add("Value", settings, "Smoothing", false, DataSourceUpdateMode.OnPropertyChanged);
+            colorNamesListBox.DataSource = settings.Colors;
+            colorsListBox.DataSource = settings.Colors;
         }
 
         private void InitAudio(InputState state)
@@ -180,7 +220,7 @@ namespace AudioVisualizerWinFramework
         {
             Samples.Clear();
             int index = (int)((reader.CurrentTime.TotalMilliseconds - output.DesiredLatency / 2) / reader.TotalTime.TotalMilliseconds * reader.SampleCount);
-            for (int i = Math.Max(index - Settings.SampleCount / 2, 0); i < Math.Min(reader.SampleCount, index + Settings.SampleCount / 2); i++)
+            for (int i = Math.Max(index - settings.SampleCount / 2, 0); i < Math.Min(reader.SampleCount, index + settings.SampleCount / 2); i++)
             {
                 Samples.Add(songInfo.Samples[i]);
             }
@@ -211,7 +251,7 @@ namespace AudioVisualizerWinFramework
                 Samples.Add(temp[i * 2] + temp[i * 2 + 1]);
             }
 
-            while (Samples.Count > Settings.SampleCount)
+            while (Samples.Count > settings.SampleCount)
             {
                 Samples.RemoveAt(0);
             }
@@ -245,6 +285,8 @@ namespace AudioVisualizerWinFramework
 
             Start.Enabled = false;
             Stop.Enabled = true;
+            ShouldPaint = true;
+
 
             if (((NamedInputState)inputModeComboBox.SelectedItem).State == InputState.FileIn)
             {
@@ -259,7 +301,7 @@ namespace AudioVisualizerWinFramework
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 e.Graphics.CompositingQuality = CompositingQuality.GammaCorrected;
                 e.Graphics.Clear(Color.Black);
-                Render.Render(e.Graphics, Samples.ToArray());
+                render.Render(e.Graphics, Samples.ToArray());
             }
         }
 
@@ -273,9 +315,13 @@ namespace AudioVisualizerWinFramework
             if (((NamedInputState)inputModeComboBox.SelectedItem).State == InputState.FileIn)
             {
                 filePanel.Enabled = true;
+                Start.Enabled = false;
             }
             else
             {
+                Start.Enabled = true;
+                Stop.Enabled = false;
+
                 filePanel.Enabled = false;
                 output?.Pause();
                 playButton.Image = Resources.Play;
@@ -297,41 +343,38 @@ namespace AudioVisualizerWinFramework
 
         private void ColorNamesListBox_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            ColorPicker col = new ColorPicker(((NamedColor)colorNamesListBox.SelectedItem).Color);
+            ColorPickerDialog col = new ColorPickerDialog(((NamedColor)colorNamesListBox.SelectedItem).Color);
 
             if (col.ShowDialog() == DialogResult.OK)
             {
-                Settings.Colors[colorNamesListBox.SelectedIndex].Color = col.Color;
+                settings.Colors[colorNamesListBox.SelectedIndex].Color = col.Color;
                 colorsListBox.Invalidate();
             }
         }
 
         private void ColorsListBox_DrawItem(object sender, DrawItemEventArgs e)
         {
-            //
-            // Draw the background of the ListBox control for each item.
-            // Create a new Brush and initialize to a Black colored brush
-            // by default.
-            //
             e.DrawBackground();
             if (e.Index > -1)
             {
                 e.Graphics.FillRectangle(new SolidBrush(((NamedColor)((ListBox)sender).Items[e.Index]).Color), e.Bounds);
             }
-            //
-            // If the ListBox has focus, draw a focus rectangle 
-            // around the selected item.
-            //
             e.DrawFocusRectangle();
         }
 
         private void LoadFileButton_Click(object sender, EventArgs e)
         {
+            playButton.Image = Resources.Play;
+            ShouldPaint = false;
+
+            StopReading();
+            output?.Stop();
+
             OpenFileDialog dialog = new OpenFileDialog
             {
                 Filter = "Sound Files (*.mp3; *.wav)|*.mp3; *.wav|All Files (*.*)|*.*",
                 FilterIndex = 0,
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic),
                 CheckFileExists = true,
                 Multiselect = false
             };
@@ -346,27 +389,27 @@ namespace AudioVisualizerWinFramework
                 reader = null;
                 input = null;
 
-                songInfo = new SongInfo(dialog.FileName);
+                songInfo = new SongInfo(dialog.FileName, songProgressBar, Folder);
 
                 songProgressBar.Value = 0;
-            }
 
-            if (File.Exists(songInfo.FilePath))
-            {
-                fileNameLabel.Text = songInfo.SongName;
-
-                audioPlaybackPanel.Enabled = true;
-
-                reader = new WaveFileReader(songInfo.FilePath);
-
-                output = new WaveOut
+                if (File.Exists(songInfo.FilePath))
                 {
-                    NumberOfBuffers = 8
-                };
-                output.PlaybackStopped += Output_PlaybackStopped;
-                output.Init(reader);
+                    fileNameLabel.Text = songInfo.SongName;
 
-                playButton.Image = Resources.Play;
+                    audioPlaybackPanel.Enabled = true;
+
+                    reader = new WaveFileReader(songInfo.FilePath);
+
+                    output = new WaveOut
+                    {
+                        NumberOfBuffers = 8
+                    };
+                    output.PlaybackStopped += Output_PlaybackStopped;
+                    output.Init(reader);
+
+                    playButton.Image = Resources.Play;
+                }
             }
         }
 
@@ -382,18 +425,20 @@ namespace AudioVisualizerWinFramework
         {
             if (output.PlaybackState == PlaybackState.Paused || output.PlaybackState == PlaybackState.Stopped)
             {
-                output.Play();
+                output?.Play();
 
                 if (Start.Enabled)
                     StartReading();
                 playButton.Image = Resources.Pause;
 
                 StartProgressBar();
+                ShouldPaint = true;
             }
             else
             {
                 output.Pause();
                 playButton.Image = Resources.Play;
+                ShouldPaint = false;
             }
         }
 
@@ -409,95 +454,158 @@ namespace AudioVisualizerWinFramework
         }
         private void UpdateProgressBar(object sender, EventArgs e)
         {
-            songProgressBar?.BeginInvoke(new Action(() => songProgressBar.Value = Math.Min(Math.Max((int)((float)reader.CurrentTime.TotalSeconds / reader.TotalTime.TotalSeconds * 100), songProgressBar.Minimum), songProgressBar.Maximum)));
+            if (reader != null)
+                songProgressBar?.BeginInvoke(new Action(() => songProgressBar.Value = Math.Min(Math.Max((int)((float)(reader?.CurrentTime.TotalSeconds ?? 0) / (reader?.TotalTime.TotalSeconds ?? 1) * 100), songProgressBar.Minimum), songProgressBar.Maximum)));
         }
 
         private void ExportButton_Click(object sender, EventArgs e)
         {
-            SaveFileDialog fd = new SaveFileDialog
+            try
             {
-                Filter = "AVI (*.avi)|*.avi",
-                DefaultExt = ".avi",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
-            };
+                if (output.PlaybackState == PlaybackState.Playing)
+                    PlayButton_Click(this, EventArgs.Empty);
+                bool isVideoFolder = Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Music Videos"));
+                SaveFileDialog fd = new SaveFileDialog
+                {
+                    Filter = "AVI (*.avi)|*.avi",
+                    DefaultExt = ".avi",
+                    InitialDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), isVideoFolder ? "Music Videos" : ""),
+                    FileName = songInfo.SongName
+                };
 
-            if (fd.ShowDialog() == DialogResult.OK)
+                if (fd.ShowDialog() == DialogResult.OK)
+                {
+                    if (!CreateVideo(fd.FileName))
+                    {
+                        Enabled = true;
+                        MessageBox.Show("Video exported successfully", "Success!");
+                    }
+                }
+            }
+            catch (Exception err)
             {
-                CreateVideo(fd.FileName);
+                MessageBox.Show("Error exporting video", $"Error: {err.Message}");
             }
         }
 
-        private void CreateVideo(string outputPath)
+        private bool CreateVideo(string outputPath)
         {
-            //USING AFORGE NOW
-            //RawVideoPipeSource pipe = new RawVideoPipeSource(GenerateFrames());
-            //pipe.FrameRate = 30;
+            output.Dispose();
+            reader.Position = 0;
 
-            //FFMpegArguments.FromPipe(pipe).WithVideoCodec("h.624").ForceFormat("mp4").OutputToFile(outputPath).ProcessSynchronously();
-
-            //VideoFileWriter writer = new VideoFileWriter();
-            //writer.Open(outputPath, 1920, 1080, 30, VideoCodec.MpegTs);
-
-            //AVIWriter writer = new AVIWriter("WMV3")
-            //{
-            //    FrameRate = 30
-            //};
-            //writer.Open(outputPath, 1920, 1080);
-
-            if (File.Exists("Video.avi"))
+            string videoPath = Path.GetFullPath(Path.Combine("Temp", Folder, songInfo.SongName + "_Video.avi"));
+            try
             {
-                File.Delete("Video.avi");
+                if (File.Exists(videoPath))
+                {
+                    File.Delete(videoPath);
+                }
+                if (File.Exists(outputPath))
+                {
+                    File.Delete(outputPath);
+                }
             }
-            if (File.Exists(outputPath))
+            catch (IOException e)
             {
-                File.Delete(outputPath);
+                MessageBox.Show($"An error occurred\n\n{e.Message}", "ERROR");
+                return false;
+            }
+            VideoFileWriter writer = null;
+            VideoSettingsDialog v = new VideoSettingsDialog();
+            if (v.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    writer = new VideoFileWriter();
+                    writer.Open(videoPath, v.VideoSize.Width, v.VideoSize.Height, v.FPS, Accord.Video.FFMPEG.VideoCodec.H264, v.BitDepth);
+                    GenerateFrames(ref writer, v.FPS, v.VideoSize.Width, v.VideoSize.Height);
+                    writer.Close();
+
+                    try
+                    {
+                        Process.Start("ffmpeg.exe", $"-i \"{videoPath}\" -i \"{songInfo.FilePath}\" -c:v copy \"{outputPath}\"").WaitForExit();
+                    }
+                    catch (Exception err)
+                    {
+                        MessageBox.Show($"An error occurred copying the video\n\n{err.Message}\n\nConsole: ffmpeg.exe -i \"{videoPath}\" -i \"{songInfo.FilePath}\" -c:v copy \"{outputPath}\"", "ERROR");
+                    }
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"An error occurred generating the video\n\n{e.Message}", "ERROR");
+                    writer?.Close();
+                    return false;
+                }
             }
 
-            VideoFileWriter writer = new VideoFileWriter();
-            writer.Open("Video.avi", 1920, 1080, 30, Accord.Video.FFMPEG.VideoCodec.H264, 4000000);
-            GenerateFrames(ref writer);
-            writer.Close();
-
-            FFMpeg.ReplaceAudio("Video.avi", songInfo.FilePath, outputPath);
+            return true;
         }
 
-        private int MapRange (int val, int oldMin, int oldMax, int newMin, int newMax)
+        private int Map (int val, int oldMin, int oldMax, int newMin, int newMax)
         {
             return (int)(((double)(val - oldMin) / (oldMax - oldMin)) * (newMax - newMin) + newMin);
         }
 
-        private void GenerateFrames(ref VideoFileWriter writer)
+        private void GenerateFrames(ref VideoFileWriter writer, int fps, int width, int height)
         {
-            Invoke(new Action(() => Enabled = false));
-            int lastFrame = (int)(reader.TotalTime.TotalSeconds * 30);
-            int lastIndex = (int)reader.SampleCount;
-            int index = 0;
-            List<IVideoFrame> frames = new List<IVideoFrame>();
-            songProgressBar.Maximum = lastFrame;
-            for (int i = 0; i < lastFrame; i++)
+            lock (songInfo.Samples)
             {
-                Samples.Clear();
-                index = MapRange(i, 0, lastFrame, 0, lastIndex);
-                for (int j = Math.Max(index - Settings.SampleCount / 2, 0); j < Math.Min(reader.SampleCount, index + Settings.SampleCount / 2); j++)
+                videoSettings = settings.Copy();
+                videoSettings.WindowSize = new Size(width, height);
+                render.Settings = videoSettings;
+                Invoke(new Action(() => Enabled = false));
+                int lastFrame = (int)(reader.TotalTime.TotalSeconds * fps);
+                int lastIndex = (int)reader.SampleCount;
+                int index = 0;
+                List<IVideoFrame> frames = new List<IVideoFrame>();
+                songProgressBar.Maximum = lastFrame;
+                for (int i = 0; i < lastFrame; i++)
                 {
-                    Samples.Add(songInfo.Samples[j]);
+                    Samples.Clear();
+                    index = Map(i, 0, lastFrame, 0, lastIndex);
+                    for (int j = Math.Max(index - songInfo.Samples.Length / 2, 0); j < Math.Min(songInfo.Samples.Length, index + songInfo.Samples.Length / 2); j++)
+                    {
+                        Samples.Add(songInfo.Samples[j]);
+                    }
+
+                    using (Bitmap bmp = new Bitmap(width, height))
+                        using (Graphics g = Graphics.FromImage(bmp))
+                        {
+                            g.SmoothingMode = SmoothingMode.AntiAlias;
+                            render.Render(g, Samples.ToArray());
+                            writer.WriteVideoFrame(bmp);
+                        }
+
+                    if (i % 100 == 0)
+                        songProgressBar.Invoke(new Action(() => songProgressBar.Value = i));
                 }
 
-                using (Bitmap bmp = new Bitmap(1920, 1080))
-                {
-                    Graphics g = Graphics.FromImage(bmp);
-                    g.SmoothingMode = SmoothingMode.AntiAlias;
-                    Render.Render(g, Samples.ToArray());
-
-                    writer.WriteVideoFrame(bmp);
-                    //bmp.Save(@"C:\Users\Flynn\Downloads\New folder\" + i + ".bmp");
-                }
-
-                songProgressBar.Invoke(new Action(() => songProgressBar.Value = i));
+                songProgressBar.Invoke(new Action(() => songProgressBar.Value = 0));
+                Invoke(new Action(() => Enabled = true));
+                render.Settings = settings;
             }
+        }
 
-            songProgressBar.Invoke(new Action(() => songProgressBar.Value = 0));
-            Invoke(new Action(() => Enabled = true));
+        private void windowSizeNumberBox_ValueChanged(object sender, EventArgs e)
+        {
+            settings.WindowSize = new Size((int)windowWidthNumberBox.Value, (int)windowHeightNumberBox.Value);
+            WindowChanged?.Invoke(sender, new WindowSizeChangedEventArgs(settings.WindowSize));
+        }
+
+        public void WindowSizeChanged(Size s, FormWindowState state)
+        {
+            windowWidthNumberBox.Value = s.Width;
+            windowHeightNumberBox.Value = s.Height;
+            if (state == FormWindowState.Maximized)
+            {
+                windowWidthNumberBox.Enabled = false;
+                windowHeightNumberBox.Enabled = false;
+            }
+            else
+            {
+                windowWidthNumberBox.Enabled = true;
+                windowHeightNumberBox.Enabled = true;
+            }
         }
     }
 }

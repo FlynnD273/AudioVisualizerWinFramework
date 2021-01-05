@@ -104,11 +104,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ColorPicker.cs">
+    <Compile Include="ColorPickerDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ColorPicker.designer.cs">
-      <DependentUpon>ColorPicker.cs</DependentUpon>
+    <Compile Include="ColorPickerDialog.designer.cs">
+      <DependentUpon>ColorPickerDialog.cs</DependentUpon>
     </Compile>
     <Compile Include="DoubleBufferedPanel.cs">
       <SubType>Component</SubType>
@@ -147,8 +147,16 @@
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="SongInfo.cs" />
-    <EmbeddedResource Include="ColorPicker.resx">
-      <DependentUpon>ColorPicker.cs</DependentUpon>
+    <Compile Include="Utils.cs" />
+    <Compile Include="VideoSettingsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VideoSettingsDialog.Designer.cs">
+      <DependentUpon>VideoSettingsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WindowSizeChangedEventArgs.cs" />
+    <EmbeddedResource Include="ColorPickerDialog.resx">
+      <DependentUpon>ColorPickerDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="DoubleBufferedPanel.resx">
       <DependentUpon>DoubleBufferedPanel.cs</DependentUpon>
@@ -168,6 +176,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SettingsForm.resx">
       <DependentUpon>SettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VideoSettingsDialog.resx">
+      <DependentUpon>VideoSettingsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="FFMPEG\bin\presets\ffprobe.xsd">
       <SubType>Designer</SubType>

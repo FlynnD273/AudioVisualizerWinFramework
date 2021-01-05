@@ -23,26 +23,26 @@ namespace AudioVisualizerWinFramework
 
             List<PointF> points = new List<PointF>();
 
-            points.Add(new PointF(0,  g.VisibleClipBounds.Height));
+            points.Add(new PointF(0,  Settings.WindowSize.Height));
 
             for (int i = 0; i < heights.Length; i++)
             {
                 float height = Smooth(heights, i, Settings.Smoothing);
-                points.Add(new PointF(i / (float)heights.Length *  g.VisibleClipBounds.Width * Settings.XScale, (float)( g.VisibleClipBounds.Height - 20.0f - height * Settings.YScale)));
+                points.Add(new PointF(i / (float)heights.Length *  Settings.WindowSize.Width * Settings.XScale, (float)(Settings.WindowSize.Height - 20.0f - height * Settings.YScale)));
 
-                if (i / (float)heights.Length *  g.VisibleClipBounds.Width * Settings.XScale >  g.VisibleClipBounds.Width)
+                if (i / (float)heights.Length *  Settings.WindowSize.Width * Settings.XScale >  Settings.WindowSize.Width)
                 {
                     break;
                 }
             }
 
-            points.Add(new PointF( g.VisibleClipBounds.Width,  g.VisibleClipBounds.Height));
+            points.Add(new PointF( Settings.WindowSize.Width,  Settings.WindowSize.Height));
 
-            LinearGradientBrush b = new LinearGradientBrush(new PointF(0, 0), new PointF( g.VisibleClipBounds.Width, 0), Settings.GetColor("Left"), Settings.GetColor("Right"));
+            LinearGradientBrush b = new LinearGradientBrush(new PointF(0, 0), new PointF( Settings.WindowSize.Width, 0), Settings.GetColor("Left"), Settings.GetColor("Right"));
 
             g.FillPolygon(b, points.ToArray());
 
-            b = new LinearGradientBrush(new PointF(0, 0), new PointF(0,  g.VisibleClipBounds.Height), Settings.GetColor("Top"), Color.FromArgb(0, Settings.GetColor("Top")));
+            b = new LinearGradientBrush(new PointF(0, 0), new PointF(0,  Settings.WindowSize.Height), Settings.GetColor("Top"), Color.FromArgb(0, Settings.GetColor("Top")));
 
             g.FillPolygon(b, points.ToArray());
         }

@@ -49,12 +49,18 @@
             this.playButton = new System.Windows.Forms.Button();
             this.fileNameLabel = new System.Windows.Forms.Label();
             this.loadFileButton = new System.Windows.Forms.Button();
+            this.windowWidthNumberBox = new System.Windows.Forms.NumericUpDown();
+            this.windowHeightNumberBox = new System.Windows.Forms.NumericUpDown();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.xScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yScaleNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.samplePowNumberBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.smoothingNumberBox)).BeginInit();
             this.filePanel.SuspendLayout();
             this.audioPlaybackPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.windowWidthNumberBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.windowHeightNumberBox)).BeginInit();
             this.SuspendLayout();
             // 
             // Start
@@ -97,6 +103,7 @@
             // 
             // renderModeComboBox
             // 
+            this.renderModeComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.renderModeComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.renderModeComboBox.FormattingEnabled = true;
             this.renderModeComboBox.Location = new System.Drawing.Point(354, 10);
@@ -108,8 +115,9 @@
             // 
             // xScaleNumberBox
             // 
+            this.xScaleNumberBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.xScaleNumberBox.DecimalPlaces = 2;
-            this.xScaleNumberBox.Location = new System.Drawing.Point(11, 66);
+            this.xScaleNumberBox.Location = new System.Drawing.Point(575, 32);
             this.xScaleNumberBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.xScaleNumberBox.Name = "xScaleNumberBox";
             this.xScaleNumberBox.Size = new System.Drawing.Size(162, 26);
@@ -117,8 +125,9 @@
             // 
             // yScaleNumberBox
             // 
+            this.yScaleNumberBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.yScaleNumberBox.DecimalPlaces = 2;
-            this.yScaleNumberBox.Location = new System.Drawing.Point(11, 116);
+            this.yScaleNumberBox.Location = new System.Drawing.Point(575, 82);
             this.yScaleNumberBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.yScaleNumberBox.Name = "yScaleNumberBox";
             this.yScaleNumberBox.Size = new System.Drawing.Size(162, 26);
@@ -126,7 +135,8 @@
             // 
             // samplePowNumberBox
             // 
-            this.samplePowNumberBox.Location = new System.Drawing.Point(182, 66);
+            this.samplePowNumberBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.samplePowNumberBox.Location = new System.Drawing.Point(746, 32);
             this.samplePowNumberBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.samplePowNumberBox.Name = "samplePowNumberBox";
             this.samplePowNumberBox.Size = new System.Drawing.Size(162, 26);
@@ -134,7 +144,8 @@
             // 
             // smoothingNumberBox
             // 
-            this.smoothingNumberBox.Location = new System.Drawing.Point(184, 116);
+            this.smoothingNumberBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.smoothingNumberBox.Location = new System.Drawing.Point(748, 82);
             this.smoothingNumberBox.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.smoothingNumberBox.Name = "smoothingNumberBox";
             this.smoothingNumberBox.Size = new System.Drawing.Size(162, 26);
@@ -142,8 +153,9 @@
             // 
             // label1
             // 
+            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 44);
+            this.label1.Location = new System.Drawing.Point(575, 10);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(64, 20);
             this.label1.TabIndex = 8;
@@ -151,8 +163,9 @@
             // 
             // label2
             // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 94);
+            this.label2.Location = new System.Drawing.Point(575, 60);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(64, 20);
             this.label2.TabIndex = 8;
@@ -160,8 +173,9 @@
             // 
             // samplePowLabel
             // 
+            this.samplePowLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.samplePowLabel.AutoSize = true;
-            this.samplePowLabel.Location = new System.Drawing.Point(182, 44);
+            this.samplePowLabel.Location = new System.Drawing.Point(746, 10);
             this.samplePowLabel.Name = "samplePowLabel";
             this.samplePowLabel.Size = new System.Drawing.Size(170, 20);
             this.samplePowLabel.TabIndex = 9;
@@ -169,8 +183,9 @@
             // 
             // smoothingLabel
             // 
+            this.smoothingLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.smoothingLabel.AutoSize = true;
-            this.smoothingLabel.Location = new System.Drawing.Point(182, 94);
+            this.smoothingLabel.Location = new System.Drawing.Point(746, 60);
             this.smoothingLabel.Name = "smoothingLabel";
             this.smoothingLabel.Size = new System.Drawing.Size(86, 20);
             this.smoothingLabel.TabIndex = 10;
@@ -178,6 +193,7 @@
             // 
             // colorNamesListBox
             // 
+            this.colorNamesListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.colorNamesListBox.FormattingEnabled = true;
             this.colorNamesListBox.ItemHeight = 20;
             this.colorNamesListBox.Location = new System.Drawing.Point(354, 46);
@@ -207,7 +223,7 @@
             this.filePanel.Controls.Add(this.audioPlaybackPanel);
             this.filePanel.Controls.Add(this.fileNameLabel);
             this.filePanel.Controls.Add(this.loadFileButton);
-            this.filePanel.Location = new System.Drawing.Point(11, 146);
+            this.filePanel.Location = new System.Drawing.Point(10, 46);
             this.filePanel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.filePanel.Name = "filePanel";
             this.filePanel.Size = new System.Drawing.Size(338, 157);
@@ -276,12 +292,84 @@
             this.loadFileButton.UseVisualStyleBackColor = true;
             this.loadFileButton.Click += new System.EventHandler(this.LoadFileButton_Click);
             // 
+            // windowWidthNumberBox
+            // 
+            this.windowWidthNumberBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.windowWidthNumberBox.Increment = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.windowWidthNumberBox.Location = new System.Drawing.Point(575, 136);
+            this.windowWidthNumberBox.Maximum = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.windowWidthNumberBox.Minimum = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.windowWidthNumberBox.Name = "windowWidthNumberBox";
+            this.windowWidthNumberBox.Size = new System.Drawing.Size(162, 26);
+            this.windowWidthNumberBox.TabIndex = 14;
+            this.windowWidthNumberBox.Value = new decimal(new int[] {
+            120,
+            0,
+            0,
+            0});
+            this.windowWidthNumberBox.ValueChanged += new System.EventHandler(this.windowSizeNumberBox_ValueChanged);
+            // 
+            // windowHeightNumberBox
+            // 
+            this.windowHeightNumberBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.windowHeightNumberBox.Increment = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+            this.windowHeightNumberBox.Location = new System.Drawing.Point(746, 136);
+            this.windowHeightNumberBox.Name = "windowHeightNumberBox";
+            this.windowHeightNumberBox.Size = new System.Drawing.Size(158, 26);
+            this.windowHeightNumberBox.TabIndex = 15;
+            this.windowHeightNumberBox.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            this.windowHeightNumberBox.ValueChanged += new System.EventHandler(this.windowSizeNumberBox_ValueChanged);
+            // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(575, 113);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(110, 20);
+            this.label3.TabIndex = 16;
+            this.label3.Text = "Window Width";
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(746, 113);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(116, 20);
+            this.label4.TabIndex = 17;
+            this.label4.Text = "Window Height";
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Menu;
-            this.ClientSize = new System.Drawing.Size(559, 314);
+            this.ClientSize = new System.Drawing.Size(933, 223);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.windowHeightNumberBox);
+            this.Controls.Add(this.windowWidthNumberBox);
             this.Controls.Add(this.filePanel);
             this.Controls.Add(this.colorsListBox);
             this.Controls.Add(this.colorNamesListBox);
@@ -308,6 +396,8 @@
             this.filePanel.ResumeLayout(false);
             this.filePanel.PerformLayout();
             this.audioPlaybackPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.windowWidthNumberBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.windowHeightNumberBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -336,5 +426,9 @@
         private System.Windows.Forms.Button playButton;
         private System.Windows.Forms.ProgressBar songProgressBar;
         private System.Windows.Forms.Button exportButton;
+        private System.Windows.Forms.NumericUpDown windowWidthNumberBox;
+        private System.Windows.Forms.NumericUpDown windowHeightNumberBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
     }
 }

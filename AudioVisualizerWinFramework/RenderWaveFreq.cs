@@ -20,18 +20,18 @@ namespace AudioVisualizerWinFramework
             GetLastIndex(heights);
             List<PointF> points = new List<PointF>();
 
-            points.Add(new PointF(0,  g.VisibleClipBounds.Height / 2));
+            points.Add(new PointF(0,  Settings.WindowSize.Height / 2));
 
             for (int i = 0; i < lastIndex; i++)
             {
                 float height = Smooth(heights, i, Settings.Smoothing);
-                float x = i / (float)heights.Length *  g.VisibleClipBounds.Width * Settings.XScale;
-                float y = (float)( g.VisibleClipBounds.Height / 2 - height * Settings.YScale * ((i % 2) * 2 - 1));
+                float x = i / (float)heights.Length *  Settings.WindowSize.Width * Settings.XScale;
+                float y = (float)( Settings.WindowSize.Height / 2 - height * Settings.YScale * ((i % 2) * 2 - 1));
 
                 points.Add(new PointF(x, y));
             }
 
-            points.Add(new PointF( g.VisibleClipBounds.Width,  g.VisibleClipBounds.Height / 2));
+            points.Add(new PointF( Settings.WindowSize.Width,  Settings.WindowSize.Height / 2));
 
             Pen p = new Pen(Settings.GetColor("Color"), 2.0f);
 

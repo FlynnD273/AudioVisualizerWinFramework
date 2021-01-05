@@ -29,8 +29,13 @@ namespace AudioVisualizerWinFramework
             return lastIndex = (int)Math.Min((heights.Length / Settings.XScale), heights.Length);
         }
 
-        protected List<PointF> GetCircularPoints(float[] heights, float scale, Graphics g, float radius = 100)
+        protected List<PointF> GetCircularPoints(float[] heights, float scale, Graphics g, float radius = -1)
         {
+            if (radius == -1)
+            {
+                radius = Math.Min(Settings.WindowWidth, Settings.WindowHeight) / 8;
+            }
+
             List<PointF> points = new List<PointF>();
             maxAngle = 0;
             maxHeight = 0;
@@ -41,8 +46,8 @@ namespace AudioVisualizerWinFramework
 
                 float height = SmoothCircular(heights, i, Settings.Smoothing, lastIndex) * scale * Settings.YScale;
 
-                double x = Math.Cos(angle - Math.PI / 2) * (height + radius) +  g.VisibleClipBounds.Width / 2;
-                double y = Math.Sin(angle - Math.PI / 2) * (height + radius) +  g.VisibleClipBounds.Height / 2;
+                double x = Math.Cos(angle - Math.PI / 2) * (height + radius) +  Settings.WindowSize.Width / 2;
+                double y = Math.Sin(angle - Math.PI / 2) * (height + radius) +  Settings.WindowSize.Height / 2;
 
                 points.Add(new PointF((float)x, (float)y));
 

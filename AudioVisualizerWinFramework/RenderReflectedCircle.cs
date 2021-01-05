@@ -20,7 +20,7 @@ namespace AudioVisualizerWinFramework
             float[] heights = FFT.SampleToFreq(samples, Settings.SampleCount);
             GetLastIndex(heights);
 
-            float minX =  g.VisibleClipBounds.Width;
+            float minX =  Settings.WindowSize.Width;
             float maxX = 0;
 
             List<PointF> points = new List<PointF>();
@@ -31,8 +31,8 @@ namespace AudioVisualizerWinFramework
 
                 float height = Smooth(heights, i, Settings.Smoothing);
 
-                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  g.VisibleClipBounds.Width / 2;
-                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  g.VisibleClipBounds.Height / 2;
+                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  Settings.WindowSize.Width / 2;
+                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  Settings.WindowSize.Height / 2;
                 points.Add(new PointF((float)x, (float)y));
 
                 minX = (float)Math.Min(minX, x);
@@ -45,8 +45,8 @@ namespace AudioVisualizerWinFramework
 
                 float height = Smooth(heights, i, Settings.Smoothing);
 
-                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  g.VisibleClipBounds.Width / 2;
-                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  g.VisibleClipBounds.Height / 2;
+                double x = Math.Cos(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  Settings.WindowSize.Width / 2;
+                double y = Math.Sin(angle - Math.PI / 2) * (height * Settings.YScale + 100) +  Settings.WindowSize.Height / 2;
                 points.Add(new PointF((float)x, (float)y));
 
                 minX = (float)Math.Min(minX, x);

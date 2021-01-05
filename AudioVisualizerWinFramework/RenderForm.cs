@@ -1,23 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.Design;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MathNet.Numerics;
-using NAudio;
-using NAudio.CoreAudioApi;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
 
 namespace AudioVisualizerWinFramework
 {
@@ -41,12 +26,20 @@ namespace AudioVisualizerWinFramework
 
         private async void InitSettingsForm()
         {
-            settingsForm = new SettingsForm();
+            await Task.Delay(100);
+            WindowState = FormWindowState.Maximized;
+            settingsForm = new SettingsForm(ClientSize);
             settingsForm.UpdateGraphics += (s, e) => Invalidate();
             settingsForm.SettingsChanged += UpdateSettings;
+            settingsForm.WindowChanged += updatWindowSize;
             settingsForm.Show();
             await Task.Delay(100);
             settingsForm.Activate();
+        }
+
+        private void updatWindowSize(object sender, WindowSizeChangedEventArgs e)
+        {
+            ClientSize = e.Size;
         }
 
         private void UpdateSettings(object sender, RenderEventArgs e)
@@ -57,12 +50,19 @@ namespace AudioVisualizerWinFramework
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            if (settingsForm.Samples != null && settingsForm.Samples.Count > 0)
+            try
             {
-                e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                e.Graphics.CompositingQuality = CompositingQuality.GammaCorrected;
-                e.Graphics.Clear(Color.Black);
-                activeRender.Render(e.Graphics, settingsForm.Samples.ToArray());
+                if (settingsForm != null && settingsForm.ShouldPaint && settingsForm.Samples != null && settingsForm.Samples.Count > 0)
+                {
+                    e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                    e.Graphics.CompositingQuality = CompositingQuality.GammaCorrected;
+                    e.Graphics.Clear(Color.Black);
+                    activeRender.Render(e.Graphics, settingsForm.Samples.ToArray());
+                }
+            }
+            catch (Exception exception)
+            {
+
             }
         }
 
@@ -89,6 +89,7 @@ namespace AudioVisualizerWinFramework
                 {
                     FormBorderStyle = FormBorderStyle.Sizable;
                 }
+                settingsForm?.WindowSizeChanged(ClientSize, WindowState);
                 isResizing = false;
             }
         }
