@@ -55,17 +55,32 @@ namespace AudioVisualizerWinFramework
                     comps[i] = new Complex(0, 0);
                 }*/
             }
-            
+
             Fourier.Forward(comps);
 
-            float[] values = new float[comps.Length];
+            //Too slow! I need to learn how fast Fourier transforms work
+            //comps = FourierTransform(comps);
 
-            for (int i = 0; i < values.Length; i++)
-            {
-                values[i] = (float)Convert.ToDouble(comps[i].Magnitude);
-            }
+            float[] values = comps.Select(o => Convert.ToSingle(o.Magnitude)).ToArray();
 
             return values;
+        }
+
+        public static Complex[] FourierTransform(Complex[] x)
+        {
+            int N = x.Length;
+
+            Complex[] output = new Complex[N];
+
+            double scale = -2.0 * Math.PI / N;
+            for (int k = 0; k < N; k++)
+            {
+                output[k] = new Complex();
+                for (int n = 0; n < N; n++)
+                    output[k] += x[n] * Complex.FromPolarCoordinates(1, scale * k * n);
+            }
+
+            return output;
         }
     }
 }
